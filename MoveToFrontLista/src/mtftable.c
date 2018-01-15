@@ -77,7 +77,12 @@ void table_insert(Table *table, KEY key,VALUE value) {
 	dlist_insert(t->values,dlist_first(t->values),e);
 
 }
-
+/*
+ * This function is suppose to move the looked up value to the first position
+ * of the table but also return the value.
+ * Input : pointer to table and pointer to key.
+ * Output : looked up value.
+ */
 VALUE table_lookup(Table *table, KEY key) {
 
     MTFTable *t = (MTFTable*)table;
@@ -89,13 +94,11 @@ VALUE table_lookup(Table *table, KEY key) {
         i=dlist_inspect(t->values,p);
         if (t->cf(i->key,key)==0)
         {
-            //Inserts the looked upp value first in list
+            //Inserts the looked up value first in list
             table_insert(t, i->key, i->value);
-            //Remove the looked upp value. i is now
-            //pointing to an empty address
+            //Remove the looked up value. i is now pointing to nothing.
             dlist_remove(t->values, p);
-            //Update i to point  to the first element in
-            //list where the looked up value was inserted
+            //Update i:s position to the same as looked up value.
             i= dlist_inspect(t->values, dlist_first(t->values));
             return i->value;
         }
