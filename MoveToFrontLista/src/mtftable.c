@@ -84,28 +84,32 @@ void table_insert(Table *table, KEY key,VALUE value) {
  * Output : looked up value.
  */
 VALUE table_lookup(Table *table, KEY key) {
-
-    MTFTable *t = (MTFTable*)table;
+    MyTable *t = (MyTable*)table;
     TableElement *i;
     dlist_position p=dlist_first(t->values);
+    dlist_position temp = p;
+
+	TableElement *tempElement = (TableElement*) malloc(sizeof(TableElement));
 
     while (!dlist_isEnd(t->values,p)) {
-
         i=dlist_inspect(t->values,p);
-        if (t->cf(i->key,key)==0)
-        {
-            //Inserts the looked up value first in list
-            table_insert(t, i->key, i->value);
-            //Remove the looked up value. i is now pointing to nothing.
-            dlist_remove(t->values, p);
-            //Update i:s position to the same as looked up value.
-            i= dlist_inspect(t->values, dlist_first(t->values));
-            return i->value;
+        if (t->cf(i->key,key)==0){
+
+			tempElement->key = i->key;	//Lägg in värde i tempslot
+			tempElement->value = i->value;
+
+			dlist_remove(t->values,p);	//Ta bort värde
+
+			dlist_insert(t->values,temp,tempElement);	////Lägg till värde.
+
+            return tempElement->value;
         }
+
         p=dlist_next(t->values,p);
-    }
+	}
     return NULL;
 }
+
 
 /* This function removes the element Corresponding to the given key*/
 void table_remove(Table *table, KEY key) {
