@@ -32,7 +32,6 @@ Table *table_create(CompareFunction *compare_function)
 		return NULL;
 	t->values=dlist_empty();
     dlist_setMemHandler(t->values, free);
-
     t->cf = compare_function;
 	return t;
 }
@@ -84,7 +83,7 @@ void table_insert(Table *table, KEY key,VALUE value) {
  * Output : looked up value.
  */
 VALUE table_lookup(Table *table, KEY key) {
-    MyTable *t = (MyTable*)table;
+	MTFTable *t = (MTFTable*)table;
     TableElement *i;
     dlist_position p=dlist_first(t->values);
     dlist_position temp = p;
