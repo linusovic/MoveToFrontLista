@@ -24,7 +24,9 @@ typedef struct TableElement{
  *                     parameter is smaller than the right parameter, 0 if
  *                     the parameters are equal, and >0 if the left
  *                     parameter is larger than the right item.
- * Returns: A pointer to the table. NULL if creation of the table failed. */
+ * Returns: A pointer to the table. NULL if creation of the table failed.
+ * Simplified asymptotic complexity analysis O(1)
+ *  */
 Table *table_create(CompareFunction *compare_function)
 {
 	MTFTable *t = calloc(sizeof (MTFTable),1);
@@ -42,7 +44,6 @@ Table *table_create(CompareFunction *compare_function)
 void table_setKeyMemHandler(Table *table,KeyFreeFunc *freeFunc) {
     MTFTable *t = (MTFTable*)table;
     t->keyFree=freeFunc;
-
 }
 /*
  *  freeFunc- Pointer to a function that is called for  freeing all
@@ -54,7 +55,9 @@ void table_setValueMemHandler(Table *table,ValueFreeFunc *freeFunc) {
 
 /* Determines if the table is empty.
  *  table - Pointer to the table.
- * Returns: false if the table is not empty, true if it is. */
+ * Returns: false if the table is not empty, true if it is.
+ * Simplified asymptotic complexity analysis O(1)
+ * */
 bool table_isEmpty(Table *table) {
 	MTFTable *t = (MTFTable*)table;
 	return dlist_isEmpty(t->values);
@@ -67,6 +70,7 @@ bool table_isEmpty(Table *table) {
  *  table - Pointer to the table.
  *  key   - Pointer to the key.
  *  value - Pointer to the value.
+ *  Simplified asymptotic complexity analysis O(1)
  */
 void table_insert(Table *table, KEY key,VALUE value) {
 	MTFTable *t = (MTFTable*)table;
@@ -74,13 +78,13 @@ void table_insert(Table *table, KEY key,VALUE value) {
 	e->key = key;
 	e->value = value;
 	dlist_insert(t->values,dlist_first(t->values),e);
-
 }
 /*
  * This function is suppose to move the looked up value to the first position
  * of the table but also return the value.
  * Input : pointer to table and pointer to key.
  * Output : looked up value.
+ * Simplified asymptotic complexity analysis O(n)
  */
 VALUE table_lookup(Table *table, KEY key) {
 	MTFTable *t = (MTFTable*)table;
@@ -89,33 +93,30 @@ VALUE table_lookup(Table *table, KEY key) {
     dlist_position temp = p;
 
 	TableElement *tempElement = (TableElement*) malloc(sizeof(TableElement));
-
+	//Traverse through list, if key found move it to front of the list.
     while (!dlist_isEnd(t->values,p)) {
         i=dlist_inspect(t->values,p);
         if (t->cf(i->key,key)==0){
-
-			tempElement->key = i->key;	//Lägg in värde i tempslot
+			tempElement->key = i->key;	//Add value to temp-slot
 			tempElement->value = i->value;
-
-			dlist_remove(t->values,p);	//Ta bort värde
-
-			dlist_insert(t->values,temp,tempElement);	////Lägg till värde.
-
+			dlist_remove(t->values,p);	//Remove value
+			dlist_insert(t->values,temp,tempElement);	//Add to value
             return tempElement->value;
         }
-
-        p=dlist_next(t->values,p);
+        p=dlist_next(t->values,p);	//Check next slot.
 	}
     return NULL;
 }
 
 
-/* This function removes the element Corresponding to the given key*/
+/* This function removes the element Corresponding to the given key
+ * Simplified asymptotic complexity analysis O(n)
+ * */
 void table_remove(Table *table, KEY key) {
 	MTFTable *t = (MTFTable*)table;
 	TableElement *i;
 	dlist_position p=dlist_first(t->values);
-
+	//Traverse through the list, if key found, remove it.
 	while (!dlist_isEnd(t->values,p)) {
 		i=dlist_inspect(t->values,p);
 		if (t->cf(i->key,key)==0) {
@@ -128,7 +129,6 @@ void table_remove(Table *table, KEY key) {
 		else
 			p=dlist_next(t->values,p);
 	}
-
 }
 
 /*This function removes the table */
